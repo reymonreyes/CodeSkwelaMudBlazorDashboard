@@ -1,0 +1,33 @@
+﻿@page "/"
+@using MudBlazorDashboard.Components.Dashboard
+
+<PageTitle>MudBlazor Dashboard</PageTitle>
+
+<MudContainer Class="mt-5 px-4" MaxWidth="MaxWidth.False">
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <TotalSales/>            
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <TotalOrders/>            
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <TotalOrdersShipped/>            
+        </MudItem>
+        <MudItem xs="12" sm="5" md="5">
+            <MonthlySalesYtd/>            
+        </MudItem>
+        <MudItem xs="12" sm="7" md="7">
+            <MonthlyOrdersAndOrdersShippedYtd/>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="3">
+            <ProductCategorySales/>            
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <Top10Products/>            
+        </MudItem>
+        <MudItem xs="12" sm="6" md="5">
+            <Top10Customers/>            
+        </MudItem>
+    </MudGrid>
+</MudContainer>

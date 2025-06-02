@@ -1,0 +1,27 @@
+﻿@using MudBlazorDashboard.Services
+
+<MudPaper Elevation="2" Class="pa-4" Style=@($"height: 100px;background:{Colors.Blue.Default};color: white;")>
+    <MudText><b>Total Orders @DateTime.Now.ToShortDateString()</b></MudText>
+    <MudText Align="Align.Right" Style="font-size: 3em;">
+        @if (_isLoaded)
+            @_totalOrders.ToString("N0")
+        else
+            { <MudProgressLinear Color="Color.Dark" Indeterminate="true" Class="my-7" /> }
+    </MudText>
+</MudPaper>
+
+@code {
+    private bool _isLoaded = false;
+    private int _totalOrders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (RendererInfo.IsInteractive)
+        {
+            var reportService = new ReportService();
+            _isLoaded = false;
+            _totalOrders = await reportService.GetTotalOrdersOfTheDay();
+            _isLoaded = true;
+        }
+    }
+}

@@ -1,0 +1,49 @@
+﻿@using MudBlazorDashboard.Services
+@using MudBlazorDashboard.Services.Dtos
+
+<MudPaper Elevation="2" Class="pa-4" Style="height: 100%;">
+    <MudText>Top 10 Products @DateTime.Now.ToString("MMMM yyyy")</MudText>
+    @if (_isLoaded)
+    {            
+        <MudSimpleTable Dense="true" Hover="true">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < _top10ProductsOfMonth.Count; i++)
+                {
+                    var product = _top10ProductsOfMonth[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@product.ProductName</td>
+                        <td style="text-align: right;">@product.Total.ToString("$#,#.00")</td>
+                    </tr>
+                }
+            </tbody>
+        </MudSimpleTable>
+    }
+    else
+    { 
+        <MudProgressCircular Color="Color.Info" Indeterminate="true" /> 
+    }
+</MudPaper>
+
+@code {
+    private bool _isLoaded = false;
+    private List<ProductSales> _top10ProductsOfMonth = new List<ProductSales>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (RendererInfo.IsInteractive)
+        {
+            var reportService = new ReportService();
+            _isLoaded = false;
+            _top10ProductsOfMonth = await reportService.GetTop10ProductsOfMonth();
+            _isLoaded = true;
+        }
+    }
+}

@@ -1,0 +1,28 @@
+﻿@using MudBlazorDashboard.Services
+
+<MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+    <MudText>Product Categories @DateTime.Now.ToString("MMMM yyyy")</MudText>
+    @if(_isLoaded)
+        { <MudChart ChartType="ChartType.Pie" InputData="@_productCategorySalesData" InputLabels="@_productCategorySalesLabels" Width="100%" Height="300px" /> }
+    else
+        { <MudProgressCircular Color="Color.Info" Indeterminate="true" /> }
+</MudPaper>
+
+@code {
+    private bool _isLoaded = false;
+    private double[] _productCategorySalesData = new double[0];
+    private string[] _productCategorySalesLabels = new string[0];
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (RendererInfo.IsInteractive)
+        {
+            var reportService = new ReportService();
+            _isLoaded = false;
+            var productCategorySales = await reportService.GetCurrentMonthlySalesByProductCategory();
+            _productCategorySalesData = productCategorySales.Select(x => (double)x.Total).ToArray();
+            _productCategorySalesLabels = productCategorySales.Select(x => x.CategoryName).ToArray();
+            _isLoaded = true;
+        }
+    }
+}

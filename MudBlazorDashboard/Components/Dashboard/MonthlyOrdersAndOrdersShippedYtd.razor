@@ -1,0 +1,35 @@
+﻿@using MudBlazorDashboard.Services
+<MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+    <MudText>Monthly Orders Made/Orders Shipped YTD</MudText>
+    @if(_isLoaded)
+        { <MudChart ChartType="ChartType.Bar" ChartSeries="@_monthlyOrdersAndShippedChartSeries" XAxisLabels="@_xAxisLabels" ChartOptions="_options" AxisChartOptions="_axisChartOptions" Width="100%" Height="300px" /> }
+    else
+        { <MudProgressCircular Color="Color.Info" Indeterminate="true" /> }
+</MudPaper>
+
+@code {
+    private bool _isLoaded = false;
+    private List<ChartSeries> _monthlyOrdersAndShippedChartSeries = new List<ChartSeries>();
+    private readonly ChartOptions _options = new ChartOptions();
+    private readonly AxisChartOptions _axisChartOptions = new AxisChartOptions();
+    private string[] _xAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (RendererInfo.IsInteractive)
+        {
+            var reportService = new ReportService();
+            _isLoaded = false;
+            var monthlyOrders = await reportService.GetMonthlyOrdersYtd();
+            var monthlyOrdersShipped = await reportService.GetMonthlyOrdersShippedYtd();
+            _monthlyOrdersAndShippedChartSeries = new List<ChartSeries>()
+            {
+                new ChartSeries { Name = "Orders", Data = monthlyOrders.Select(x => (double)x.Total).ToArray() },
+                new ChartSeries { Name = "Orders Shipped", Data = monthlyOrdersShipped.Select(x => (double)x.Total).ToArray() }
+            };
+
+            _axisChartOptions.MatchBoundsToSize = true;
+            _isLoaded = true;
+        }
+    }
+}

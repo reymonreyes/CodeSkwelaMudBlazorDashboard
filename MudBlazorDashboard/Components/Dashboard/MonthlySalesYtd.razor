@@ -1,0 +1,36 @@
+﻿@using MudBlazorDashboard.Services
+
+<MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+    <MudText>Monthly Sales YTD</MudText>
+    @if(_isLoaded)
+        { <MudChart ChartType="ChartType.Line" ChartSeries="@_monthlySalesChartSeries" XAxisLabels="@_xAxisLabels" ChartOptions="_options" AxisChartOptions="_axisChartOptions" Width="100%" Height="300px" /> }
+    else
+        { <MudProgressCircular Color="Color.Info" Indeterminate="true" /> }
+</MudPaper>
+
+@code {
+    private bool _isLoaded = false;
+    private List<ChartSeries> _monthlySalesChartSeries = new List<ChartSeries>();
+    private string[] _xAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
+    private readonly ChartOptions _options = new ChartOptions();
+    private readonly AxisChartOptions _axisChartOptions = new AxisChartOptions();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (RendererInfo.IsInteractive)
+        {
+            var reportService = new ReportService();
+            _isLoaded = false;
+            var monthlySales = await reportService.GetMonthlySalesYtd();
+            _options.YAxisFormat = "c2";
+
+            if (monthlySales.Count > 0)
+                _monthlySalesChartSeries.Add(new ChartSeries { Name = "Monthly Sales", Data = monthlySales.Select(x => Math.Round((double)x.Total / 1000000, 2)).ToArray() });
+
+            _options.YAxisFormat = "$#,#.00 M";
+            _options.LineStrokeWidth = 10;
+            _axisChartOptions.MatchBoundsToSize = true;
+            _isLoaded = true;
+        }
+    }
+}
